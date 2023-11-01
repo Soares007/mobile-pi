@@ -42,6 +42,9 @@ const LoginScreen = ({ route, navigation }) => {
     if (userType === 'Coordenador') {
       // Navegar para a tela de opções de gerenciamento se o usuário for um coordenador
       navigation.navigate('ManageOptions');
+    } else if (userType === 'Aluno') {
+      // Navegar para a tela de opções de visualização para o usuário Aluno
+      navigation.navigate('StudentOptions');
     } else {
       // Para outros tipos de usuários, navegar para a tela de perfil
       navigation.navigate('Profile', { userType, usuario });
@@ -86,6 +89,24 @@ const ManageOptionsScreen = ({ navigation }) => {
       >
         <Text style={styles.buttonText}>Gerenciar Turma</Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('ManageProfessor')}
+      >
+        <Text style={styles.buttonText}>Gerenciar Professores</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('ManageDiscipline')}
+      >
+        <Text style={styles.buttonText}>Gerenciar Disciplina</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('ReserveRoom')}
+      >
+        <Text style={styles.buttonText}>Reservar Sala e Laboratório</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -108,6 +129,33 @@ const ManageClassScreen = () => {
   );
 };
 
+const ManageProfessorScreen = () => {
+  return (
+    <View style={styles.container}>
+      <Text>Tela de Gerenciamento de Professor</Text>
+      {/* Adicione funcionalidades de gerenciamento de professor aqui */}
+    </View>
+  );
+};
+
+const ManageDisciplineScreen = () => {
+  return (
+    <View style={styles.container}>
+      <Text>Tela de Gerenciamento de Disciplina</Text>
+      {/* Adicione funcionalidades de gerenciamento de disciplina aqui */}
+    </View>
+  );
+};
+
+const ReserveRoomScreen = () => {
+  return (
+    <View style={styles.container}>
+      <Text>Tela de Reserva de Sala e Laboratório</Text>
+      {/* Adicione funcionalidades de reserva de sala e laboratório aqui */}
+    </View>
+  );
+};
+
 const ProfileScreen = ({ route }) => {
   const { userType, usuario } = route.params;
   return (
@@ -115,6 +163,58 @@ const ProfileScreen = ({ route }) => {
       <Text>Bem-vindo, {usuario}!</Text>
       <Text>Tipo de usuário: {userType}</Text>
       {/* Adicione mais informações do perfil do aluno, professor ou coordenador aqui */}
+    </View>
+  );
+};
+
+const StudentOptionsScreen = ({ navigation }) => {
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('ViewTeacherSchedule')}
+      >
+        <Text style={styles.buttonText}>Visualizar Horários de Professor</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('ViewSchedule')}
+      >
+        <Text style={styles.buttonText}>Visualizar Horários</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('ViewFavorites')}
+      >
+        <Text style={styles.buttonText}>Visualizar Favoritos</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+const ViewTeacherScheduleScreen = () => {
+  return (
+    <View style={styles.container}>
+      {/* Adicione funcionalidades de visualização de horários de professores aqui */}
+      <Text>Tela de Visualização de Horários de Professores</Text>
+    </View>
+  );
+};
+
+const ViewScheduleScreen = () => {
+  return (
+    <View style={styles.container}>
+      {/* Adicione funcionalidades de visualização de horários aqui */}
+      <Text>Tela de Visualização de Horários</Text>
+    </View>
+  );
+};
+
+const ViewFavoritesScreen = () => {
+  return (
+    <View style={styles.container}>
+      {/* Adicione funcionalidades de visualização de favoritos aqui */}
+      <Text>Tela de Visualização de Favoritos</Text>
     </View>
   );
 };
@@ -128,7 +228,14 @@ const App = () => {
         <Stack.Screen name="ManageOptions" component={ManageOptionsScreen} options={{ title: 'Opções de Gerenciamento' }} />
         <Stack.Screen name="ManageSchedule" component={ManageScheduleScreen} options={{ title: 'Gerenciar Horário' }} />
         <Stack.Screen name="ManageClass" component={ManageClassScreen} options={{ title: 'Gerenciar Turma' }} />
+        <Stack.Screen name="ManageProfessor" component={ManageProfessorScreen} options={{ title: 'Gerenciar Professor' }} />
+        <Stack.Screen name="ManageDiscipline" component={ManageDisciplineScreen} options={{ title: 'Gerenciar Disciplina' }} />
+        <Stack.Screen name="ReserveRoom" component={ReserveRoomScreen} options={{ title: 'Reservar Sala e Laboratório' }} />
         <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Perfil' }} />
+        <Stack.Screen name="StudentOptions" component={StudentOptionsScreen} options={{ title: 'Opções do Aluno' }} />
+        <Stack.Screen name="ViewTeacherSchedule" component={ViewTeacherScheduleScreen} options={{ title: 'Horários de Professores' }} />
+        <Stack.Screen name="ViewSchedule" component={ViewScheduleScreen} options={{ title: 'Horários' }} />
+        <Stack.Screen name="ViewFavorites" component={ViewFavoritesScreen} options={{ title: 'Favoritos' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
