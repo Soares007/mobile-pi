@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, Button, Text, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import SelectDropdown from 'react-native-select-dropdown'
 
 const Stack = createStackNavigator();
 
@@ -111,50 +112,362 @@ const ManageOptionsScreen = ({ navigation }) => {
   );
 };
 
+  // começo gerenciar horário;
+
+const diasDaSemana = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira"];
+const horarios = ["13:20 - 14:50 ocupado por matemática", "15:00 - 15:50 ocupado por matemática", "16:00 - 16:50 ocupado por banco de dados"];
+
 const ManageScheduleScreen = () => {
   return (
     <View style={styles.container}>
-      <Text>Tela de Gerenciamento de Horário</Text>
-      {/* Adicione funcionalidades de gerenciamento de horário aqui */}
+      <Text>Horário Atuais</Text>
+
+      <SelectDropdown
+        data={diasDaSemana}
+        onSelect={(selectedItem, index) => {
+          console.log(selectedItem, index);
+        }}
+        buttonTextAfterSelection={(selectedItem, index) => {
+          // text represented after item is selected
+          // if data array is an array of objects then return selectedItem.property to render after item is selected
+          return selectedItem;
+        }}
+        rowTextForSelection={(item, index) => {
+          // text represented for each item in dropdown
+          // if data array is an array of objects then return item.property to represent item in dropdown
+          return item;
+        }}
+        buttonText="Selecione o Dia da Semana"
+      />
+
+      <SelectDropdown
+        data={horarios}
+        onSelect={(selectedItem, index) => {
+          console.log(selectedItem, index);
+        }}
+        buttonTextAfterSelection={(selectedItem, index) => {
+          // text represented after item is selected
+          // if data array is an array of objects then return selectedItem.property to render after item is selected
+          return selectedItem;
+        }}
+        rowTextForSelection={(item, index) => {
+          // text represented for each item in dropdown
+          // if data array is an array of objects then return item.property to represent item in dropdown
+          return item;
+        }}
+        buttonText="Selecione o Horário"
+      />
+
+      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <Button
+          title="Fazer alteração"
+          onPress={() => {
+            // Handle button press action
+          }}
+        />
+
+        <Button
+          title="Excluir"
+          onPress={() => {
+            // Handle button press action
+          }}
+          color="red"
+        />
+      </View>
     </View>
   );
 };
+
+  // fim do gerenciar horário;
+
+  //começo do gerenciar turma;
+
+const cursos = ["ADS", "ADM", "Eventos"];
+const semestres = ["1° Semestre", "2° Semestre", "3° Semestre", "4° Semestre"];
+const turnos = ["Matutino", "Vespertino", "Noturno"];
 
 const ManageClassScreen = () => {
   return (
     <View style={styles.container}>
-      <Text>Tela de Gerenciamento de Turma</Text>
-      {/* Adicione funcionalidades de gerenciamento de turma aqui */}
+      <Text>Gerenciar Turma</Text>
+
+      <SelectDropdown
+        data={cursos}
+        onSelect={(selectedItem, index) => {
+          console.log(selectedItem, index);
+        }}
+        buttonTextAfterSelection={(selectedItem, index) => {
+          // text represented after item is selected
+          // if data array is an array of objects then return selectedItem.property to render after item is selected
+          return selectedItem;
+        }}
+        rowTextForSelection={(item, index) => {
+          // text represented for each item in dropdown
+          // if data array is an array of objects then return item.property to represent item in dropdown
+          return item;
+        }}
+        buttonText="Selecione o Curso"
+      />
+
+      <SelectDropdown
+        data={semestres}
+        onSelect={(selectedItem, index) => {
+          console.log(selectedItem, index);
+        }}
+        buttonTextAfterSelection={(selectedItem, index) => {
+          // text represented after item is selected
+          // if data array is an array of objects then return selectedItem.property to render after item is selected
+          return selectedItem;
+        }}
+        rowTextForSelection={(item, index) => {
+          // text represented for each item in dropdown
+          // if data array is an array of objects then return item.property to represent item in dropdown
+          return item;
+        }}
+        buttonText="Selecione o Semestre"
+      />
+
+      <SelectDropdown
+        data={turnos}
+        onSelect={(selectedItem, index) => {
+          console.log(selectedItem, index);
+        }}
+        buttonTextAfterSelection={(selectedItem, index) => {
+          // text represented after item is selected
+          // if data array is an array of objects then return selectedItem.property to render after item is selected
+          return selectedItem;
+        }}
+        rowTextForSelection={(item, index) => {
+          // text represented for each item in dropdown
+          // if data array is an array of objects then return item.property to represent item in dropdown
+          return item;
+        }}
+        buttonText="Selecione o Turno"
+      />
+
+      <Button
+        title="Fazer alteração"
+        onPress={() => {
+          // Handle button press action
+        }}
+      />
     </View>
   );
 };
+
+  //fim do gerenciar turma;
+
+  //cadastro de professor;
 
 const ManageProfessorScreen = () => {
+  const [nome, setNome] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [email, setEmail] = useState('');
+  const [disciplina, setDisciplina] = useState('');
+
+  const handleCadastrarProfessor = () => {
+    // Implemente aqui a lógica para cadastrar o professor
+    console.log(`Nome: ${nome}, CPF: ${cpf}, Email: ${email}, Disciplina: ${disciplina}`);
+    // Adicione a lógica para enviar os dados para o backend ou realizar o cadastro no aplicativo
+  };
+
   return (
     <View style={styles.container}>
-      <Text>Tela de Gerenciamento de Professor</Text>
-      {/* Adicione funcionalidades de gerenciamento de professor aqui */}
+      <Text style={styles.title}>Cadastro de Professor</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Nome"
+        onChangeText={(text) => setNome(text)}
+        value={nome}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="CPF"
+        onChangeText={(text) => setCpf(text)}
+        value={cpf}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        onChangeText={(text) => setEmail(text)}
+        value={email}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Disciplina"
+        onChangeText={(text) => setDisciplina(text)}
+        value={disciplina}
+      />
+      <TouchableOpacity style={styles.button} onPress={handleCadastrarProfessor}>
+        <Text style={styles.buttonText}>Cadastrar Professor</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
+// fim do cadastro de professor;
+
+
+// cadastrar disciplina;
+
 const ManageDisciplineScreen = () => {
+  const [disciplinas, setDisciplinas] = useState([]);
+  const [id, setId] = useState('');
+  const [nomeDisciplina, setNomeDisciplina] = useState('');
+  const [nomeProfessor, setNomeProfessor] = useState('');
+  const [horario, setHorario] = useState('');
+  const [dia, setDia] = useState('');
+
+  const handleCadastrarDisciplina = () => {
+    // Implemente aqui a lógica para cadastrar a disciplina
+    const novaDisciplina = {
+      id,
+      nomeDisciplina,
+      nomeProfessor,
+      horario,
+      dia,
+    };
+
+    setDisciplinas([...disciplinas, novaDisciplina]);
+
+    // Limpa os campos após o cadastro
+    setId('');
+    setNomeDisciplina('');
+    setNomeProfessor('');
+    setHorario('');
+    setDia('');
+  };
+
   return (
     <View style={styles.container}>
-      <Text>Tela de Gerenciamento de Disciplina</Text>
-      {/* Adicione funcionalidades de gerenciamento de disciplina aqui */}
+      <Text style={styles.title}>Cadastro de Disciplina</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="ID"
+        onChangeText={(text) => setId(text)}
+        value={id}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Nome da Disciplina"
+        onChangeText={(text) => setNomeDisciplina(text)}
+        value={nomeDisciplina}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Nome do Professor"
+        onChangeText={(text) => setNomeProfessor(text)}
+        value={nomeProfessor}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Horário"
+        onChangeText={(text) => setHorario(text)}
+        value={horario}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Dia"
+        onChangeText={(text) => setDia(text)}
+        value={dia}
+      />
+      <TouchableOpacity style={styles.button} onPress={handleCadastrarDisciplina}>
+        <Text style={styles.buttonText}>Cadastrar Disciplina</Text>
+      </TouchableOpacity>
+
+      {/* Tabela de Disciplinas Cadastradas */}
+      <View style={styles.tableContainer}>
+        <Text style={styles.tableHeader}>Disciplinas Cadastradas</Text>
+        <View style={styles.tableRow}>
+          <Text>ID</Text>
+          <Text>Disciplina</Text>
+          <Text>Professor</Text>
+          <Text>Horário</Text>
+          <Text>Dia</Text>
+        </View>
+        {disciplinas.map((disciplina, index) => (
+          <View style={styles.tableRow} key={index}>
+            <Text>{disciplina.id}</Text>
+            <Text>{disciplina.nomeDisciplina}</Text>
+            <Text>{disciplina.nomeProfessor}</Text>
+            <Text>{disciplina.horario}</Text>
+            <Text>{disciplina.dia}</Text>
+          </View>
+        ))}
+      </View>
     </View>
   );
 };
+
+//fim do cadastro de disciplina;
+
+// reserva de sala e lab;
+
+const salas = ["Sala 1", "Sala 2", "Sala 3"];
+const laboratorios = ["Lab 1", "Lab 2", "Lab 3"];
 
 const ReserveRoomScreen = () => {
   return (
     <View style={styles.container}>
       <Text>Tela de Reserva de Sala e Laboratório</Text>
-      {/* Adicione funcionalidades de reserva de sala e laboratório aqui */}
+
+      <SelectDropdown
+        data={salas}
+        onSelect={(selectedItem, index) => {
+          if (selectedItem === "Sala 2" || selectedItem === "Sala 3") {
+            alert("Essa sala já está reservada");
+          } else {
+            console.log(selectedItem, index);
+          }
+        }}
+        buttonTextAfterSelection={(selectedItem, index) => {
+          // text represented after item is selected
+          // if data array is an array of objects then return selectedItem.property to render after item is selected
+          return selectedItem;
+        }}
+        rowTextForSelection={(item, index) => {
+          // text represented for each item in dropdown
+          // if data array is an array of objects then return item.property to represent item in dropdown
+          return item;
+        }}
+        buttonText="Selecione a Sala"
+      />
+
+      <SelectDropdown
+        data={laboratorios}
+        onSelect={(selectedItem, index) => {
+          if (selectedItem === "Lab 3") {
+            alert("Esse laboratório já está reservado");
+          } else {
+            console.log(selectedItem, index);
+          }
+        }}
+        buttonTextAfterSelection={(selectedItem, index) => {
+          // text represented after item is selected
+          // if data array is an array of objects then return selectedItem.property to render after item is selected
+          return selectedItem;
+        }}
+        rowTextForSelection={(item, index) => {
+          // text represented for each item in dropdown
+          // if data array is an array of objects then return item.property to represent item in dropdown
+          return item;
+        }}
+        buttonText="Selecione o Laboratório"
+      />
+
+      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <Button
+          title="Reservar"
+          onPress={() => {
+            // Handle button press action
+          }}
+        />
+      </View>
     </View>
   );
 };
+
+//fim reserva sala e lab;
 
 const ProfileScreen = ({ route }) => {
   const { userType, usuario } = route.params;
@@ -167,6 +480,8 @@ const ProfileScreen = ({ route }) => {
   );
 };
 
+
+//opções alunos;
 const StudentOptionsScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
@@ -191,6 +506,10 @@ const StudentOptionsScreen = ({ navigation }) => {
     </View>
   );
 };
+
+//fim opções alunos;
+
+
 
 const ViewTeacherScheduleScreen = () => {
   return (
@@ -270,6 +589,32 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
   },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  tableContainer: {
+    marginTop: 20,
+    borderWidth: 1,
+    borderColor: '#000',
+    padding: 10,
+  },
+  tableHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  tableRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  dropdownContainer: {
+    width: 50, // Adjust width as needed
+    alignSelf: 'center', // Center the dropdown
+    marginTop: 200, // Move the dropdown slightly higher
+    
+  },
 });
 
-export default App;
+export default App
