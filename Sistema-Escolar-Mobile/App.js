@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TextInput, Button, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TextInput, Button, Text, TouchableOpacity, Alert,  FlatList} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import SelectDropdown from 'react-native-select-dropdown'
+import SelectDropdown from 'react-native-select-dropdown';
+import axios from 'axios';
 
 const Stack = createStackNavigator();
 
@@ -37,17 +38,14 @@ const LoginScreen = ({ route, navigation }) => {
   const [senha, setSenha] = useState('');
 
   const handleLogin = () => {
-    // Implemente aqui a lógica de autenticação com RM e senha
-    // Você pode usar o estado 'rm' e 'senha' para obter os valores dos campos de entrada
     console.log(`Usuario: ${usuario}, Senha: ${senha}`);
     if (userType === 'Coordenador') {
-      // Navegar para a tela de opções de gerenciamento se o usuário for um coordenador
       navigation.navigate('ManageOptions');
     } else if (userType === 'Aluno') {
-      // Navegar para a tela de opções de visualização para o usuário Aluno
+      
       navigation.navigate('StudentOptions');
     } else {
-      // Para outros tipos de usuários, navegar para a tela de perfil
+    
       navigation.navigate('Profile', { userType, usuario });
     }
   };
@@ -70,7 +68,10 @@ const LoginScreen = ({ route, navigation }) => {
         onChangeText={text => setSenha(text)}
         value={senha}
       />
-      <Button title="Login" onPress={handleLogin} />
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleLogin}
+      ><Text>login</Text></TouchableOpacity>
     </View>
   );
 };
@@ -114,143 +115,233 @@ const ManageOptionsScreen = ({ navigation }) => {
 
   // começo gerenciar horário;
 
-const diasDaSemana = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira"];
-const horarios = ["13:20 - 14:50 ocupado por matemática", "15:00 - 15:50 ocupado por matemática", "16:00 - 16:50 ocupado por banco de dados"];
+  const daysofweek = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira"];
+  const startTimes = ["13:20", "15:00", "16:00"];
+  const endTimes = ["14:50", "15:50", "16:50"];
 
-const ManageScheduleScreen = () => {
-  return (
-    <View style={styles.container}>
-      <Text>Horário Atuais</Text>
+  
+  
+  const ManageScheduleScreen = () => {
+    const [selectedDayOfWeek, setSelectedDayOfWeek] = useState("");
+    const [selectedStartTime, setSelectedStartTime] = useState("");
+    const [selectedEndTime, setSelectedEndTime] = useState("");
+  
+    const handleCadastrar = async () => {
+      if (!selectedDayOfWeek || !selectedStartTime || !selectedEndTime) {
+        return;
+      }
+  
+      const request = {
+        daysofweek: selectedDayOfWeek,
+        startTime: selectedStartTime,
+        endTime: selectedEndTime,
+      };
+  
+      try {
+        await fetch("http://localhost:8080/times", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(request),
+        });
+  
+        console.log("Schedule created successfully!");
+  
+        setSelectedDayOfWeek("");
+        setSelectedStartTime("");
+        setSelectedEndTime("");
+      } catch (error) {
+        console.error(error);
+        
+      }
+    };
+  
+    return (
+      <View style={styles.container}>
+        <Text>Horário Atuais</Text>
+  
+        <View style={styles.container2}>
+          <SelectDropdown
+            data={daysofweek}
+            onSelect={(selectedItem, index) => {
+              setSelectedDayOfWeek(selectedItem);
+            }}
+            buttonTextAfterSelection={(selectedItem, index) => selectedItem}
+            rowTextForSelection={(item, index) => item}
+            buttonText="Selecione o Dia da Semana"
+            defaultButtonText="Selecione o Dia da Semana"
+            buttonStyle={styles.dropdown2BtnStyle}
+            buttonTextStyle={styles.dropdown2BtnTxtStyle}
+            dropdownIconPosition="right"
+            dropdownStyle={styles.dropdown2DropdownStyle}
+            rowStyle={styles.dropdown2RowStyle}
+            rowTextStyle={styles.dropdown2RowTxtStyle}
+          />
+        </View>
+  
+        <View style={styles.container2}>
+          <SelectDropdown
+            data={startTimes}
+            onSelect={(selectedItem, index) => {
+              setSelectedStartTime(selectedItem);
+            }}
+            buttonTextAfterSelection={(selectedItem, index) => selectedItem}
+            rowTextForSelection={(item, index) => item}
+            buttonText="Selecione o Horário de Início"
+            defaultButtonText="Selecione o Horário de Início"
+            buttonStyle={styles.dropdown2BtnStyle}
+            buttonTextStyle={styles.dropdown2BtnTxtStyle}
+            dropdownIconPosition="right"
+            dropdownStyle={styles.dropdown2DropdownStyle}
+            rowStyle={styles.dropdown2RowStyle}
+            rowTextStyle={styles.dropdown2RowTxtStyle}
+          />
+        </View>
+  
+        <View style={styles.container2}>
+          <SelectDropdown
+            data={endTimes}
+            onSelect={(selectedItem, index) => {
+              setSelectedEndTime(selectedItem);
+            }}
+            buttonTextAfterSelection={(selectedItem, index) => selectedItem}
+            rowTextForSelection={(item, index) => item}
+            buttonText="Selecione o Horário de Término"
+            defaultButtonText="Selecione o Horário de Término"
+            buttonStyle={styles.dropdown2BtnStyle}
+            buttonTextStyle={styles.dropdown2BtnTxtStyle}
+            dropdownIconPosition="right"
+            dropdownStyle={styles.dropdown2DropdownStyle}
+            rowStyle={styles.dropdown2RowStyle}
+            rowTextStyle={styles.dropdown2RowTxtStyle}
+          />
+        </View>
+        <TouchableOpacity style={styles.button} onPress={handleCadastrar}>
+        <Text style={styles.buttonText}>Cadastrar</Text>
+      </TouchableOpacity>
 
-      <SelectDropdown
-        data={diasDaSemana}
-        onSelect={(selectedItem, index) => {
-          console.log(selectedItem, index);
-        }}
-        buttonTextAfterSelection={(selectedItem, index) => {
-          // text represented after item is selected
-          // if data array is an array of objects then return selectedItem.property to render after item is selected
-          return selectedItem;
-        }}
-        rowTextForSelection={(item, index) => {
-          // text represented for each item in dropdown
-          // if data array is an array of objects then return item.property to represent item in dropdown
-          return item;
-        }}
-        buttonText="Selecione o Dia da Semana"
-      />
-
-      <SelectDropdown
-        data={horarios}
-        onSelect={(selectedItem, index) => {
-          console.log(selectedItem, index);
-        }}
-        buttonTextAfterSelection={(selectedItem, index) => {
-          // text represented after item is selected
-          // if data array is an array of objects then return selectedItem.property to render after item is selected
-          return selectedItem;
-        }}
-        rowTextForSelection={(item, index) => {
-          // text represented for each item in dropdown
-          // if data array is an array of objects then return item.property to represent item in dropdown
-          return item;
-        }}
-        buttonText="Selecione o Horário"
-      />
-
-      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-        <Button
-          title="Fazer alteração"
-          onPress={() => {
-            // Handle button press action
-          }}
-        />
-
-        <Button
-          title="Excluir"
-          onPress={() => {
-            // Handle button press action
-          }}
-          color="red"
-        />
       </View>
-    </View>
-  );
-};
+    );
+  };
 
   // fim do gerenciar horário;
 
   //começo do gerenciar turma;
 
-const cursos = ["ADS", "ADM", "Eventos"];
-const semestres = ["1° Semestre", "2° Semestre", "3° Semestre", "4° Semestre"];
-const turnos = ["Matutino", "Vespertino", "Noturno"];
+const cursos = ['ADS', 'ADM', 'Eventos'];
+const semestres = ['1° Semestre', '2° Semestre', '3° Semestre', '4° Semestre'];
+const turnos = ['Matutino', 'Vespertino', 'Noturno'];
 
 const ManageClassScreen = () => {
+  const [selectedCourse, setSelectedCourse] = useState('');
+  const [selectedSemester, setSelectedSemester] = useState('');
+  const [selectedShift, setSelectedShift] = useState('');
+  const [students, setStudents] = useState('');
+  const handleCadastroTurma = async () => {
+    if (!selectedCourse || !selectedSemester || !selectedShift || !students) {
+      alert('Preencha todos os campos!');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:8080/teams', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          course: selectedCourse,
+          semester: selectedSemester,
+          shift: selectedShift,
+          students,
+        }),
+      });
+
+      if (response.ok) {
+        alert('Turma cadastrada com sucesso!');
+        setSelectedCourse('');
+        setSelectedSemester('');
+        setSelectedShift('');
+        setStudents('');
+      } else {
+        const error = await response.text();
+        alert(`Erro: ${error}`);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Falha ao cadastrar turma.');
+    }
+  };
+
+
   return (
     <View style={styles.container}>
-      <Text>Gerenciar Turma</Text>
+      <Text style={styles.title}>Cadastro de Turma</Text>
 
-      <SelectDropdown
-        data={cursos}
-        onSelect={(selectedItem, index) => {
-          console.log(selectedItem, index);
-        }}
-        buttonTextAfterSelection={(selectedItem, index) => {
-          // text represented after item is selected
-          // if data array is an array of objects then return selectedItem.property to render after item is selected
-          return selectedItem;
-        }}
-        rowTextForSelection={(item, index) => {
-          // text represented for each item in dropdown
-          // if data array is an array of objects then return item.property to represent item in dropdown
-          return item;
-        }}
-        buttonText="Selecione o Curso"
-      />
+      <View style={styles.container2}>
+        <SelectDropdown
+          data={cursos}
+          onSelect={(selectedItem) => setSelectedCourse(selectedItem)}
+          buttonTextAfterSelection={(selectedItem) => selectedItem}
+          rowTextForSelection={(item) => item}
+          buttonText="Selecione o Curso"
+          defaultButtonText={'Selecione o Curso'}
+          buttonStyle={styles.dropdown2BtnStyle}
+          buttonTextStyle={styles.dropdown2BtnTxtStyle}
+          dropdownIconPosition={'right'}
+          dropdownStyle={styles.dropdown2DropdownStyle}
+          rowStyle={styles.dropdown2RowStyle}
+          rowTextStyle={styles.dropdown2RowTxtStyle}
+        />
+      </View>
+      <View style={styles.container2}>
+        <SelectDropdown
+          data={semestres}
+          onSelect={(selectedItem) => setSelectedSemester(selectedItem)}
+          buttonTextAfterSelection={(selectedItem) => selectedItem}
+          rowTextForSelection={(item) => item}
+          buttonText="Selecione o Semestre"
+          defaultButtonText={'Selecione o Semestre'}
+          buttonStyle={styles.dropdown2BtnStyle}
+          buttonTextStyle={styles.dropdown2BtnTxtStyle}
+          dropdownIconPosition={'right'}
+          dropdownStyle={styles.dropdown2DropdownStyle}
+          rowStyle={styles.dropdown2RowStyle}
+          rowTextStyle={styles.dropdown2RowTxtStyle}
+        />
+      </View>
+      <View style={styles.container2}>
+        <SelectDropdown
+          data={turnos}
+          onSelect={(selectedItem) => setSelectedShift(selectedItem)}
+          buttonTextAfterSelection={(selectedItem) => selectedItem}
+          rowTextForSelection={(item) => item}
+          buttonText="Selecione o Turno"
+          defaultButtonText={'Selecione o Turno'}
+          buttonStyle={styles.dropdown2BtnStyle}
+          buttonTextStyle={styles.dropdown2BtnTxtStyle}
+          dropdownIconPosition={'right'}
+          dropdownStyle={styles.dropdown2DropdownStyle}
+          rowStyle={styles.dropdown2RowStyle}
+          rowTextStyle={styles.dropdown2RowTxtStyle}
+        />
+      </View>
 
-      <SelectDropdown
-        data={semestres}
-        onSelect={(selectedItem, index) => {
-          console.log(selectedItem, index);
-        }}
-        buttonTextAfterSelection={(selectedItem, index) => {
-          // text represented after item is selected
-          // if data array is an array of objects then return selectedItem.property to render after item is selected
-          return selectedItem;
-        }}
-        rowTextForSelection={(item, index) => {
-          // text represented for each item in dropdown
-          // if data array is an array of objects then return item.property to represent item in dropdown
-          return item;
-        }}
-        buttonText="Selecione o Semestre"
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.textInput}
+          placeholder="Insira o Número de alunos"
+          keyboardType="numeric"
+          value={students}
+          onChangeText={(text) => setStudents(text)}
+        />
+      </View>
 
-      <SelectDropdown
-        data={turnos}
-        onSelect={(selectedItem, index) => {
-          console.log(selectedItem, index);
-        }}
-        buttonTextAfterSelection={(selectedItem, index) => {
-          // text represented after item is selected
-          // if data array is an array of objects then return selectedItem.property to render after item is selected
-          return selectedItem;
-        }}
-        rowTextForSelection={(item, index) => {
-          // text represented for each item in dropdown
-          // if data array is an array of objects then return item.property to represent item in dropdown
-          return item;
-        }}
-        buttonText="Selecione o Turno"
-      />
-
-      <Button
-        title="Fazer alteração"
-        onPress={() => {
-          // Handle button press action
-        }}
-      />
+      <TouchableOpacity style={styles.button} onPress={handleCadastroTurma}>
+        <Text style={styles.buttonText}>Cadastrar Turma</Text>
+      </TouchableOpacity>
+      
     </View>
   );
 };
@@ -259,142 +350,184 @@ const ManageClassScreen = () => {
 
   //cadastro de professor;
 
-const ManageProfessorScreen = () => {
-  const [nome, setNome] = useState('');
-  const [cpf, setCpf] = useState('');
-  const [email, setEmail] = useState('');
-  const [disciplina, setDisciplina] = useState('');
-
-  const handleCadastrarProfessor = () => {
-    // Implemente aqui a lógica para cadastrar o professor
-    console.log(`Nome: ${nome}, CPF: ${cpf}, Email: ${email}, Disciplina: ${disciplina}`);
-    // Adicione a lógica para enviar os dados para o backend ou realizar o cadastro no aplicativo
+  const ManageProfessorScreen = () => {
+    const [id, setId] = useState('');
+    const [name, setName] = useState('');
+    const [cpf, setCpf] = useState('');
+    const [professors, setProfessors] = useState([]); // Array to store registered professors
+  
+    const fetchProfessors = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/teachers');
+        setProfessors(response.data);
+      } catch (error) {
+        console.error(error);
+        Alert.alert('Erro', 'Falha ao buscar professores.');
+      }
+    };
+  
+    const handleViewProfessors = () => {
+      fetchProfessors();
+    };
+  
+    const handleCadastrarProfessor = async () => {
+      // Implement logic to send data to the backend
+      console.log(`Id: ${id}, Name: ${name}, CPF: ${cpf}`);
+  
+      try {
+        await axios.post('http://localhost:8080/teachers', {
+          id,
+          name,
+          cpf,
+        });
+        Alert.alert('Sucesso', 'Professor cadastrado com sucesso!');
+        setId('');
+        setName('');
+        setCpf('');
+      } catch (error) {
+        console.error(error);
+        Alert.alert('Erro', 'Falha ao cadastrar professor.');
+      }
+    };
+  
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Cadastro de Professor</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Nome"
+          onChangeText={(text) => setName(text)}
+          value={name}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="CPF"
+          onChangeText={(text) => setCpf(text)}
+          value={cpf}
+        />
+        <View style={{}}>
+          <TouchableOpacity style={styles.button} onPress={handleCadastrarProfessor}>
+            <Text style={styles.buttonText}>Cadastrar Professor</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleViewProfessors}>
+            <Text style={styles.buttonText}>Ver Professores</Text>
+          </TouchableOpacity>
+        </View>
+        {professors.length > 0 && (
+          <View>
+            <Text style={styles.title}>Professores Cadastrados</Text>
+            {professors.map((professor) => (
+              <Text key={professor.id}>{professor.name} - {professor.cpf}</Text>
+            ))}
+          </View>
+        )}
+      </View>
+    );
   };
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Cadastro de Professor</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nome"
-        onChangeText={(text) => setNome(text)}
-        value={nome}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="CPF"
-        onChangeText={(text) => setCpf(text)}
-        value={cpf}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        onChangeText={(text) => setEmail(text)}
-        value={email}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Disciplina"
-        onChangeText={(text) => setDisciplina(text)}
-        value={disciplina}
-      />
-      <TouchableOpacity style={styles.button} onPress={handleCadastrarProfessor}>
-        <Text style={styles.buttonText}>Cadastrar Professor</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
 
 // fim do cadastro de professor;
 
 
 // cadastrar disciplina;
-
 const ManageDisciplineScreen = () => {
-  const [disciplinas, setDisciplinas] = useState([]);
   const [id, setId] = useState('');
-  const [nomeDisciplina, setNomeDisciplina] = useState('');
-  const [nomeProfessor, setNomeProfessor] = useState('');
-  const [horario, setHorario] = useState('');
-  const [dia, setDia] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [disciplines, setDisciplines] = useState([]); 
 
-  const handleCadastrarDisciplina = () => {
-    // Implemente aqui a lógica para cadastrar a disciplina
-    const novaDisciplina = {
-      id,
-      nomeDisciplina,
-      nomeProfessor,
-      horario,
-      dia,
-    };
+  const fetchDisciplines = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/class_subjects');
+      setDisciplines(response.data);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Erro', 'Falha ao carregar disciplinas.');
+    }
+  };
 
-    setDisciplinas([...disciplinas, novaDisciplina]);
+  const handleVerDisciplinas = async () => {
+    await fetchDisciplines();
+  };
 
-    // Limpa os campos após o cadastro
-    setId('');
-    setNomeDisciplina('');
-    setNomeProfessor('');
-    setHorario('');
-    setDia('');
+  const handleDeleteDiscipline = async (id) => {
+    try {
+      await axios.delete(`http://localhost:8080/class_subjects/${id}`);
+      await fetchDisciplines();
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Erro', 'Falha ao excluir disciplina.');
+    }
+  };
+
+  
+  const handleEditDiscipline = async (id) => {
+  };
+
+  const handleCadastrarDiscipline = async () => {
+    console.log(`Id: ${id}, Name: ${name}, Description: ${description}`);
+
+    try {
+      await axios.post('http://localhost:8080/class_subjects', {
+        id,
+        name,
+        description,
+      });
+      Alert.alert('Sucesso', 'Disciplina cadastrada com sucesso!');
+      setId('');
+      setName('');
+      setDescription('');
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Erro', 'Falha ao cadastrar disciplina.');
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Cadastro de Disciplina</Text>
+      <Text style={styles.title}>Gerenciar Disciplina</Text>
+
       <TextInput
         style={styles.input}
-        placeholder="ID"
-        onChangeText={(text) => setId(text)}
-        value={id}
+        placeholder="Nome"
+        onChangeText={(text) => setName(text)}
+        value={name}
       />
       <TextInput
         style={styles.input}
-        placeholder="Nome da Disciplina"
-        onChangeText={(text) => setNomeDisciplina(text)}
-        value={nomeDisciplina}
+        placeholder="Descrição"
+        onChangeText={(text) => setDescription(text)}
+        value={description}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Nome do Professor"
-        onChangeText={(text) => setNomeProfessor(text)}
-        value={nomeProfessor}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Horário"
-        onChangeText={(text) => setHorario(text)}
-        value={horario}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Dia"
-        onChangeText={(text) => setDia(text)}
-        value={dia}
-      />
-      <TouchableOpacity style={styles.button} onPress={handleCadastrarDisciplina}>
+
+      <TouchableOpacity style={styles.button} onPress={handleCadastrarDiscipline}>
         <Text style={styles.buttonText}>Cadastrar Disciplina</Text>
       </TouchableOpacity>
 
-      {/* Tabela de Disciplinas Cadastradas */}
-      <View style={styles.tableContainer}>
-        <Text style={styles.tableHeader}>Disciplinas Cadastradas</Text>
-        <View style={styles.tableRow}>
-          <Text>ID</Text>
-          <Text>Disciplina</Text>
-          <Text>Professor</Text>
-          <Text>Horário</Text>
-          <Text>Dia</Text>
-        </View>
-        {disciplinas.map((disciplina, index) => (
-          <View style={styles.tableRow} key={index}>
-            <Text>{disciplina.id}</Text>
-            <Text>{disciplina.nomeDisciplina}</Text>
-            <Text>{disciplina.nomeProfessor}</Text>
-            <Text>{disciplina.horario}</Text>
-            <Text>{disciplina.dia}</Text>
+      <TouchableOpacity style={styles.button} onPress={handleVerDisciplinas}>
+        <Text style={styles.buttonText}>Ver Disciplinas</Text>
+      </TouchableOpacity>
+
+     
+      {disciplines.map((discipline) => (
+        <View key={discipline.id} style={styles.disciplineItem}>
+          <Text style={styles.disciplineName}>{discipline.name}</Text>
+          <Text style={styles.disciplineDescription}>{discipline.description}</Text>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => handleDeleteDiscipline(discipline.id)}
+            >
+              <Text style={styles.button}>Excluir</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => handleEditDiscipline(discipline.id)}
+            >
+              <Text style={styles.button}>Editar</Text>
+            </TouchableOpacity>
           </View>
-        ))}
-      </View>
+        </View>
+      ))}
     </View>
   );
 };
@@ -407,6 +540,7 @@ const salas = ["Sala 1", "Sala 2", "Sala 3"];
 const laboratorios = ["Lab 1", "Lab 2", "Lab 3"];
 
 const ReserveRoomScreen = () => {
+  
   return (
     <View style={styles.container}>
       <Text>Tela de Reserva de Sala e Laboratório</Text>
@@ -421,13 +555,10 @@ const ReserveRoomScreen = () => {
           }
         }}
         buttonTextAfterSelection={(selectedItem, index) => {
-          // text represented after item is selected
-          // if data array is an array of objects then return selectedItem.property to render after item is selected
+          
           return selectedItem;
         }}
         rowTextForSelection={(item, index) => {
-          // text represented for each item in dropdown
-          // if data array is an array of objects then return item.property to represent item in dropdown
           return item;
         }}
         buttonText="Selecione a Sala"
@@ -443,13 +574,11 @@ const ReserveRoomScreen = () => {
           }
         }}
         buttonTextAfterSelection={(selectedItem, index) => {
-          // text represented after item is selected
-          // if data array is an array of objects then return selectedItem.property to render after item is selected
+          
           return selectedItem;
         }}
         rowTextForSelection={(item, index) => {
-          // text represented for each item in dropdown
-          // if data array is an array of objects then return item.property to represent item in dropdown
+          
           return item;
         }}
         buttonText="Selecione o Laboratório"
@@ -459,7 +588,7 @@ const ReserveRoomScreen = () => {
         <Button
           title="Reservar"
           onPress={() => {
-            // Handle button press action
+           
           }}
         />
       </View>
@@ -475,7 +604,7 @@ const ProfileScreen = ({ route }) => {
     <View style={styles.container}>
       <Text>Bem-vindo, {usuario}!</Text>
       <Text>Tipo de usuário: {userType}</Text>
-      {/* Adicione mais informações do perfil do aluno, professor ou coordenador aqui */}
+    
     </View>
   );
 };
@@ -510,33 +639,39 @@ const StudentOptionsScreen = ({ navigation }) => {
 //fim opções alunos;
 
 
-
+//visualizar horário professores
 const ViewTeacherScheduleScreen = () => {
   return (
     <View style={styles.container}>
-      {/* Adicione funcionalidades de visualização de horários de professores aqui */}
+      
       <Text>Tela de Visualização de Horários de Professores</Text>
     </View>
   );
 };
 
+//fim visualizar favoritos
+
 const ViewScheduleScreen = () => {
   return (
     <View style={styles.container}>
-      {/* Adicione funcionalidades de visualização de horários aqui */}
+     
       <Text>Tela de Visualização de Horários</Text>
     </View>
   );
 };
 
+
+//visualizar favoritos
 const ViewFavoritesScreen = () => {
   return (
     <View style={styles.container}>
-      {/* Adicione funcionalidades de visualização de favoritos aqui */}
+      
       <Text>Tela de Visualização de Favoritos</Text>
     </View>
   );
 };
+
+//fim visualizar favoritos
 
 const App = () => {
   return (
@@ -565,6 +700,21 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  container2: {
+    flex: 0.1,
+    width: 300,
+    height: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  
+  selection:
+  {
+    width:10,
+    height:50,
+    borderRadius: 5,
+    backgroundColor: '#B20000',
   },
   input: {
     height: 40,
@@ -610,11 +760,105 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   dropdownContainer: {
-    width: 50, // Adjust width as needed
-    alignSelf: 'center', // Center the dropdown
-    marginTop: 200, // Move the dropdown slightly higher
+    width: 50, 
+    alignSelf: 'center',
+    marginTop: 200,
     
   },
+  dropdown1BtnStyle: {
+    width: '80%',
+    height: 50,
+    backgroundColor: '#FFF',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#444',
+  },
+  dropdown1BtnTxtStyle: {color: '#444', textAlign: 'left'},
+  dropdown1DropdownStyle: {backgroundColor: '#EFEFEF'},
+  dropdown1RowStyle: {backgroundColor: '#EFEFEF', borderBottomColor: '#C5C5C5'},
+  dropdown1RowTxtStyle: {color: '#444', textAlign: 'left'},
+
+  dropdown2BtnStyle: {
+    width: '80%',
+    height: 50,
+    backgroundColor: '#444',
+    borderRadius: 8,
+  },
+  dropdown2BtnTxtStyle: {
+    color: '#FFF',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  dropdown2DropdownStyle: {
+    backgroundColor: '#444',
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+  },
+  dropdown2RowStyle: {backgroundColor: '#444', borderBottomColor: '#C5C5C5'},
+  dropdown2RowTxtStyle: {
+    color: '#FFF',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+
+  dropdown3BtnStyle: {
+    width: '80%',
+    height: 50,
+    backgroundColor: '#FFF',
+    paddingHorizontal: 0,
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: '#444',
+  },
+  dropdown3BtnChildStyle: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 18,
+  },
+  dropdown3BtnImage: {width: 45, height: 45, resizeMode: 'cover'},
+  dropdown3BtnTxt: {
+    color: '#444',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 24,
+    marginHorizontal: 12,
+  },
+  dropdown3DropdownStyle: {backgroundColor: 'slategray'},
+  dropdown3RowStyle: {
+    backgroundColor: 'slategray',
+    borderBottomColor: '#444',
+    height: 50,
+  },
+  dropdown3RowChildStyle: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingHorizontal: 18,
+  },
+  dropdownRowImage: {width: 45, height: 45, resizeMode: 'cover'},
+  dropdown3RowTxt: {
+    color: '#F1F1F1',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 24,
+    marginHorizontal: 12,
+  },
+
+  dropdown4BtnStyle: {
+    width: '50%',
+    height: 50,
+    backgroundColor: '#FFF',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#444',
+  },
+  dropdown4BtnTxtStyle: {color: '#444', textAlign: 'left'},
+  dropdown4DropdownStyle: {backgroundColor: '#EFEFEF'},
+  dropdown4RowStyle: {backgroundColor: '#EFEFEF', borderBottomColor: '#C5C5C5'},
+  dropdown4RowTxtStyle: {color: '#444', textAlign: 'left'},
 });
 
 export default App
